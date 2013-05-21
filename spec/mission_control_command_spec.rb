@@ -40,7 +40,13 @@ describe MissionControlCommand do
     end
 
     it 'does not change the timestamp if you try to check in again' do
-
+      cmd = MissionControlCommand.new('in')
+      cmd.output
+      initial_time = File.read(cmd.class.check_in_path).chomp
+      cmd2 = MissionControlCommand.new('in')
+      cmd2.output
+      final_time = File.read(cmd.class.check_in_path).chomp
+      expect(initial_time).to eql(final_time)
     end
   end
 
