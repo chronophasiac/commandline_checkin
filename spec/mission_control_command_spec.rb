@@ -1,4 +1,5 @@
 require 'rspec'
+require 'time'
 
 require_relative '../lib/mission_control_command'
 
@@ -53,13 +54,24 @@ describe MissionControlCommand do
   context 'checking out' do
     it 'acknowledges my check out' do
       cmd = MissionControlCommand.new('out')
-      expect(cmd.output).to include('You are checked out')
+      expect(cmd.output).to include("You are checked out")
     end
 
     it 'deletes the check in file' do
       cmd = MissionControlCommand.new('out')
       check_in_path = cmd.class.check_in_path
       expect(FileTest.exists?(check_in_path)).to eql(false)
+    end
+
+    it 'tells you how long you were checked in' do
+      cmd_in = MissionControlCommand.new('in')
+      cmd_in.output
+      time_in = Time.parse(File.read(cmd_in.class.check_in_path).chomp)
+      sleep(1)
+      cmd_out = MissionControlCommand.new('out')
+      out = cmd_out.output
+      total_time = (Time.now - time_in).to_i
+      expect(out).to include(total_time.to_s)
     end
 
     it 'throws a checkout error if you try to checkout twice' do

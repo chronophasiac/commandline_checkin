@@ -1,3 +1,5 @@
+require 'time'
+
 class MissionControlCommand
   def initialize(cmd)
     @cmd = cmd
@@ -19,8 +21,10 @@ class MissionControlCommand
       end
     elsif @cmd == 'out'
       if FileTest.exists?(self.class.check_in_path)
+        time_in = Time.parse(File.read(self.class.check_in_path))
+        total_time = ((Time.now - time_in).to_i).to_s
         File.delete(self.class.check_in_path)
-        return 'You are checked out'
+        return "You are checked out. You were checked in for #{total_time}"
       else
         return 'You are already checked out.'
       end
